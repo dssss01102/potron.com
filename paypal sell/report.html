@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cgdsk's Shop Report</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="../js/app.js"></script>
+
+    <!-- Dark mode specific styles -->
+    <style>
+      body {
+        background-color: #121212; /* Sötét háttérszín */
+        color: #ffffff; /* Fehér szöveg */
+      }
+
+      .container {
+        background-color: #1f1f1f; /* Sötét színű tartalom háttér */
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Árnyék */
+      }
+
+      .form-control {
+        background-color: #333333; /* Sötét input mezők */
+        color: #ffffff; /* Fehér szöveg az input mezőkben */
+      }
+
+      /* Szürke szín az aktív input mezőknél */
+      .form-control:focus {
+        background-color: #555555; /* Szürke */
+        color: #ffffff; /* Fehér szöveg */
+        border-color: #555555; /* Szürke szegély */
+        box-shadow: none; /* Nincs árnyék */
+      }
+
+      .modal-content {
+        background-color: #1f1f1f; /* Sötét modal háttér */
+        color: #ffffff; /* Fehér modal szöveg */
+      }
+
+      .modal-header {
+        border-bottom: none; /* Modal fejléc nélküli szegély */
+      }
+
+      .modal-footer {
+        border-top: none; /* Modal lábléc nélküli szegély */
+      }
+
+      .btn-primary {
+        background-color: #007bff; /* Bootstrap alapértelmezett gombszín */
+        border-color: #007bff; /* Gomb kattintott állapotban */
+      }
+
+      .btn-primary:hover {
+        background-color: #0056b3; /* Gomb hover állapot */
+        border-color: #0056b3; /* Gomb hover szegély szín */
+      }
+
+      .btn-primary:focus {
+        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.5); /* Gomb fókuszálás színe */
+      }
+
+      .btn-close {
+        color: #ffffff; /* Modal bezáró ikon színe */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <main class="mt-5">
+        <h1 class="text-center">Report an Issue with cgdsk</h1>
+        <form id="report-form">
+          <div class="mb-3">
+            <label for="fullName" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="fullName" required />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="email" required />
+          </div>
+          <div class="mb-3">
+            <label for="issue" class="form-label"
+              >Describe your issue with cgdsk</label
+            >
+            <textarea
+              class="form-control"
+              id="issue"
+              rows="5"
+              required
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit Report</button>
+        </form>
+      </main>
+      <h4 class="text-center">note</h4>
+      <p class="text-center">
+        Our team will check the offending user, and if he really violates our
+        policies, we will delete the suspect's account and we will give an award
+        for you!
+      </p>
+      <p class="text-center">
+        We will notify you of the results of the report via your email address
+      </p>
+    </div>
+
+    <!-- Popup Modal -->
+    <div
+      class="modal fade"
+      id="successModal"
+      tabindex="-1"
+      aria-labelledby="successModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="successModalLabel">Success</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            Report successfully sent! Our team will respond to your email
+            address!
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="returnHome">
+              Return to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document
+        .getElementById("report-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const fullName = document.getElementById("fullName").value;
+          const email = document.getElementById("email").value;
+          const issue = document.getElementById("issue").value;
+
+          const webhookUrl =
+            "https://discord.com/api/webhooks/1256224632063918112/T1T55R16S6p9orBCiekTK6lxWw4hTt80ThPj_t8xiiHlV5rAFFikTCIUSCBCUe8QB4R2";
+
+          const payload = JSON.stringify({
+            embeds: [
+              {
+                title: "New Report Submitted",
+                fields: [
+                  { name: "Full Name", value: fullName, inline: false },
+                  { name: "Email", value: email, inline: false },
+                  { name: "Issue", value: issue, inline: false },
+                ],
+                color: 7506394,
+              },
+            ],
+          });
+
+          fetch(webhookUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: payload,
+          })
+            .then((response) => {
+              if (response.ok) {
+                // Show the success modal
+                const successModal = new bootstrap.Modal(
+                  document.getElementById("successModal")
+                );
+                successModal.show();
+
+                // Automatically hide modal after 3 seconds and show the return home button
+                setTimeout(() => {
+                  successModal.hide();
+                  document
+                    .getElementById("returnHome")
+                    .classList.remove("d-none");
+                }, 6000);
+              } else {
+                alert("Failed to submit report.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("An error occurred while submitting the report.");
+            });
+        });
+
+      document
+        .getElementById("returnHome")
+        .addEventListener("click", function () {
+          window.location.href = "cgdsk/shop.html";
+        });
+    </script>
+  </body>
+</html>
